@@ -1,0 +1,120 @@
+<script>
+    $("#btnSave").click(function() {
+        console.log("Save Button working");
+        let sid = $("#stuid").val();
+        let nm = $("#nameid").val();
+        let em = $("#emailid").val();
+        let pm = $("#passwordid").val();
+        output = "";
+        let csrf = $('input[name=csrfmiddlewaretoken').val();
+        console.log(csrf);
+        if (nm == "" && pm == "") {
+            alert("Blank Name Field")
+        } else if (em == "") {
+            alert("Blank Email Field")
+        } else if (pm == "") {
+            alert("Blank Password Field")
+
+        } else {
+            mydata = {
+                stuid: sid,
+                name: nm,
+                email: em,
+                password: pm,
+                csrfmiddlewaretoken: csrf,
+            };
+            $.ajax({
+                url: "{% url 'save' %}",
+                method: "POST",
+                data: mydata,
+                success: function(data) {
+                    // console.log(data.status);
+
+                    x = data.student_data;
+
+
+                    if (data.status == "Successfully save") {
+                        // console.log("Form Submitted Successfully")
+                        $("#msg").text("Form Submitted successfully");
+                        $("#msg").show();
+                        $("form")[0].reset();
+                        for (i = 0; i < x.length; i++) {
+                            output += "<tr><td>" + x[i].id + "</td><td>" + x[i].name + "</td><td>" + x[i].email + "</td><td>" + x[i].password + "</td><td><input type='button' value='Edit' class='btn btn-warning btn-sm btn-edit' data-sid=" + x[i].id + "><input type='button' value='Delete' class='btn btn-danger btn-sm btn-del' data-sid=" + x[i].id + ">";
+                        }
+                        $("#tbody").html(output);
+                        $("#stuid").val('');
+                    }
+
+                    if (data.status == "Error Saving Data") {
+                        // console.log("Unable to save")
+                        $("#msg").text("Unable to save");
+                        $("#msg").show();
+                        $("#tbody").html(output);
+                        $("#stuid").val('');
+                    }
+                }
+            });
+        }
+
+    });
+
+    $("tbody").on("click", ".btn-del", function() {
+        console.log("Delete Button clicked");
+        let id = $(this).attr("data-sid");
+        let csrf = $('input[name=csrfmiddlewaretoken').val();
+
+        console.log(id);
+        mydata = {
+            sid: id,
+            csrfmiddlewaretoken: csrf,
+        }
+        mythis = this;
+        $.ajax({
+            url: "{% url 'delete' %}",
+            method: "POST",
+            data: mydata,
+
+            success: function(data) {
+                x = data.student_data;
+                console.log(data);
+                if (data.status == "Deleted Successfully") {
+                    // console.log("Data Deleted Successfully")
+                    $("#msg").text("Data deleted successfully");
+                    $("#msg").show();
+                    $(mythis).closest("tr").fadeOut();
+                }
+                if (data.status == "Error Deleted Data") {
+                    // console.log("Unable to delete")
+                    $("#msg").text("Unable to delete data");
+                    $("#msg").show();
+                }
+            }
+        });
+    });
+
+    $("tbody").on("click", ".btn-edit", function() {
+        console.log("Edit Button clicked");
+        let id = $(this).attr("data-sid");
+        let csrf = $('input[name=csrfmiddlewaretoken').val();
+        mydata = {
+            sid: id,
+            csrfmiddlewaretoken: csrf,
+        }
+        $.ajax({
+            url: "{% url 'edit' %}",
+            method: "POST",
+            data: mydata,
+            dataType: "json",
+            success: function(data) {
+                console.log(data);
+                $("#stuid").val(data.id);
+                $("#nameid").val(data.name);
+                $("#emailid").val(data.email);
+                $("#passwordid").val(data.password);
+
+            }
+
+        });
+
+    });
+</script>

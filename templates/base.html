@@ -1,0 +1,67 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+
+    <title>Django Ajax | CRUD</title>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center alert alert-danger">Django Function Based with AJAX Bootstrap 5</h2>
+        <div class="row">
+            <div class="col-sm-4">
+                <h4 class="text-center alert alert-info">Add/Update</h4>
+                <form action="" method="post">
+                    {% csrf_token %} {{form.as_p}}
+                    <input type="hidden" name="stuid" id="stuid" />
+                    <input type="button" value="Save" class="btn btn-success" id="btnSave">
+                </form>
+                <div class="alert alert-danger" id="msg" style="display: none;"></div>
+            </div>
+            <div class="col-sm-7">
+                <h4 class="text-center alert alert-info">Show Student Information</h4>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Password</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                        <tbody id="tbody">
+                            {% for student in student %}
+                            <tr>
+                                <td>{{student.id}}</td>
+                                <td>{{student.name}}</td>
+                                <td>{{student.email}}</td>
+                                <td>{{student.password}}</td>
+                                <td>
+                                    <input type="button" data-sid="{{student.id}}" value="Edit" class="btn btn-warning btn-sm btn-edit">
+                                    <input type="button" data-sid="{{student.id}}" value="Delete" class="btn btn-danger btn-sm btn-del"> </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="{% static 'js/bootstrap.js' %}"></script>
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <script src="{% static 'js/popper.js' %}"></script>
+    {% include "ajax.html" %}
+
+</body>
+
+</html>
